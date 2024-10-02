@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FINAL de Desarrollo de Software Cloud</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="header">
+            <img id="logo" src="{{ url_for('static', filename='img/icono.png') }}" width="90" height="90">
+            <h1>Clasificador de Libros</h1>
+        </div>
+    </div>
+
+    <section id="text">
+        <h2>En esta página podrá ingresar los datos del libro que desee, ¡y el sistema le adivinará el género correspondiente del mismo!</h2>
+    </section>
+
+    <section class="article" id="space">
+        <div id="text">
+            <h2>A continuación, ingrese los datos del libro que desea clasificar:</h2>
+        </div>
+    </section>
+
+    <form action="/recomendar-libros" method="POST">
+
+        <section class="databook" id="space">
+        
+            <div class="column" id="text">
+                <h2>Autor del libro</h2>
+                <input type="text" name="author" class="textfield" placeholder="Autor del libro...">
+            </div>
+            <div class="column" id="text">
+                <h2>Título</h2>
+                <input type="text" name="title" class="textfield" placeholder="Título...">
+            </div>
+            
+            <div class="column" id="text">
+                <h2>User Raiting</h2>
+                <input type="number" name="rating" class="textfield" placeholder="User Raiting...">
+            </div>
+            <div class="column" id="text">
+                <h2>Reseña</h2>
+                <input type="number" name="review" class="textfield" placeholder="Reseña...">
+            </div>
+            
+            <div class="column" id="text">
+                <h2>Precio</h2>
+                <input type="number" name="price" class="textfield" placeholder="Precio...">
+            </div>
+            <div class="column" id="text">
+                <h2>Año de Publicación</h2>
+                <input type="number" name="year" class="textfield" placeholder="Año de Publicación...">
+            </div>
+            
+            <div class="button centered">
+                <button>Enviar</button>
+            </div>
+            
+        </section>
+
+    </form>
+        
+    </body>
+
+</html>
