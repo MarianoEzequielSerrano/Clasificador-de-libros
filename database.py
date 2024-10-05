@@ -1,13 +1,14 @@
-from pymongo import MongoClient
+from  pymongo import MongoClient
 import certifi
 
-MONGO_URI = 'mongodb+srv://mariano:1234@clasificadordelibrosdb.lzeohrp.mongodb.net/?retryWrites=true&w=majority&appName=ClasificadorDeLibrosDB'
+#Cambiar dirección de conexión
+MONGO_URI = 'mongodb+srv://agus75:agus1234@cluster0.tk9lqny.mongodb.net/ClasificadorDeLibrosDB?retryWrites=true&w=majority' 
 ca = certifi.where()
 
 def dbConnection():
     try:
         client = MongoClient(MONGO_URI, tlsCAFile=ca)
-        db = client["Cloud"]
+        db = client["ClasificadorDeLibrosDB"]
     except ConnectionError: 
         print('Error de conexión con la Base de Datos')
     return db

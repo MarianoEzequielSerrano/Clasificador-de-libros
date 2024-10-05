@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>FINAL de Desarrollo de Software Cloud</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+
+    <div class="container">
+        <div id="header">
+            <img id="logo" src="{{ url_for('static', filename='img/icono.png') }}" width="90" height="90">
+            <h1>Clasificador de Libros</h1>
+        </div>
+    </div>
+
+    <div class="button">
+        <a href="{{ url_for('index') }}" style="color: white; text-decoration: none;">
+            <p>Volver</p>
+        </a>
+    </div>
+
+    <section class="article" id="space">
+        <div id="text">
+            <h2>El resultado del género del libro es:</h2>
+        </div>
+    </section>
+
+    <section class="databook" id="space">
+
+        <div class="column" id="text">
+            <h2>Autor del libro</h2>
+            <p class="textfield">{{ data['author'] }}</p>
+        </div>
+        <div class="column" id="text">
+            <h2>Título</h2>
+            <p class="textfield">{{ data['title'] }}</p>
+        </div>
+
+        <div class="column" id="text">
+            <h2>User Rating</h2>
+            <p class="textfield">{{ data['rating'] }}</p>
+        </div>
+        <div class="column" id="text">
+            <h2>Reseña</h2>
+            <p class="textfield">{{ data['review'] }}</p>
+        </div>
+
+        <div class="column" id="text">
+            <h2>Precio</h2>
+            <p class="textfield">{{ data['price'] }}</p>
+        </div>
+        <div class="column" id="text">
+            <h2>Año de Publicación</h2>
+            <p class="textfield">{{ data['year'] }}</p>
+        </div>
+
+        <div class="gender">
+            <div class="column" id="text">
+                <h2>Género:</h2>
+                <p class="textfield2"><i>{{ data['recomendado'] }}</i></p>
+            </div>
+        </div>
+
+        <div class="thanks">
+            <p>
+                <center>¡Muchas gracias por utilizar nuestro clasificador de libros!</center>
+            </p>
+        </div>
+
+    </section>
+
+</body>
+
+</html>

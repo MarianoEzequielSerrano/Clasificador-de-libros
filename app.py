@@ -1,75 +1,70 @@
-from flask import Flask, request, Response, jsonify, redirect, url_for
+from flask import Flask, request, jsonify, render_template
 import joblib  # Para cargar el modelo entrenado
-import json
 import database as dbase
+import csv
 
-db = dbase.dbConnection() # Genera una instancia de conexion a la base de datos
+db = dbase.dbConnection()  # Genera una instancia de conexión a la base de datos
 
 app = Flask(__name__)
 
 # Cargar el modelo entrenado
-modelo_recomendacion = joblib.load('gbm_model.pkl')  
+modelo_recomendacion = joblib.load('gbm_model.pkl')
 
 @app.route('/')
 def index():
-    return "¡Hola, esta es la página principal!"
+    return render_template('index.html')
 
-@app.route('/save-data', methods=['POST'])
-def persistir_data():
-    collect = db['books']
+@app.route('/recomendar-libros', methods=['POST'])
+def recomendar_libros():
+    collect = db['Libros'] #Cambiar por el nombre de la colección de MongoDB
     try:
-        data = request.get_json()
-        name = data.get('Name', None)
-        author = data.get('Author', None)
-        userRating = data.get('User Rating', None)
-        reviews = data.get('Reviews', None)
-        price = data.get('Price', None)
-        year = data.get('Year', None)
-    
-        if name and author and userRating and reviews and price and year:
-           usuario_data = [userRating, reviews, price, year]
-           genre_fiction = recomendar_libros(usuario_data)
-           genre_non_fiction = 1
-           if genre_fiction == 1:
-               genre_non_fiction = 0      
-           response = collect.insert_one({
-               'Name': name,
-               'Author' : author,
-               'User Rating' : userRating,
-               'Reviews' : reviews,
-               'Price' : price,
-               'Year' : year,
-               'Genre Fiction' : genre_fiction,
-               'Genre non Fiction' : genre_non_fiction
-           })
-           result = {
-               'id' : str(response.inserted_id),
-               'done' : True
-           }
-           return result
+        # Obtener datos del formulario
+        name = request.form.get('title')
+        author = request.form.get('author')
+        userRating = float(request.form.get('rating'))
+        reviews = int(request.form.get('review'))
+        price = float(request.form.get('price'))
+        year = int(request.form.get('year'))
+
+        if name and author and userRating is not None and reviews is not None and price is not None and year is not None:
+            usuario_data = [userRating, reviews, price, year]
+            genre_fiction = modelo_recomendacion.predict([usuario_data])[0]
+            genre_non_fiction = 0 if genre_fiction == 1 else 1
+
+            # Insertar en la base de datos
+            response = collect.insert_one({
+                'title': name,
+                'author': author,
+                'rating': userRating,
+                'review': reviews,
+                'price': price,
+                'year': year,
+                'Genre Fiction': int(genre_fiction),
+                'Genre non Fiction': int(genre_non_fiction)
+            })
+
+            # Guardar los datos en el archivo CSV
+            with open('bestsellers with categories.csv', mode='a', newline='', encoding='utf-8') as file:
+                writer = csv.writer(file)
+                writer.writerow([name, author, userRating, reviews, price, year, 'Fiction' if genre_fiction == 1 else 'Non Fiction'])
+
+            # Preparar los datos para la plantilla
+            result_data = {
+                'author': author,
+                'title': name,
+                'rating': userRating,
+                'review': reviews,
+                'price': price,
+                'year': year,
+                'recomendado': 'Ficción' if genre_fiction == 1 else 'No ficción'
+            }
+
+            return render_template('new.html', data=result_data)
         else:
-            return notFound() 
+            return jsonify({'error': 'Datos incompletos'}), 400
     except Exception as e:
         print(f"Error: {e}")
         return jsonify({'error': str(e)}), 500
-    
-def recomendar_libros(usuario_data):
-    try:
-        recomendacion = modelo_recomendacion.predict([usuario_data])[0]
-        return int(recomendacion)
 
-    except Exception as e:
-        print(f"Error: {e}")
-
-@app.errorhandler(404)
-def notFound(error=None):
-    message ={
-        'message': 'No encontrado ' + request.url,
-        'status' : '404 Not Found'
-    }
-    response = jsonify(message)
-    response.status_code = 404
-    return response
-    
 if __name__ == '__main__':
     app.run(debug=True)
